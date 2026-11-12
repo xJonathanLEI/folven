@@ -1,0 +1,61 @@
+generator client {
+  provider            = "prisma-client"
+  output              = "../generated"
+  moduleFormat        = "esm"
+  importFileExtension = "js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Caller-owned ingress state, deliberately outside stream command ownership.
+model Webhook {
+  id        String  @id
+  handedOff Boolean @default(false)
+
+  @@map("webhooks")
+}
+
+model User {
+  id       String    @id
+  email    String    @unique
+  name     String
+  nickname String?
+  age      Int?
+  posts    Post[]
+  comments Comment[]
+
+  @@map("users")
+}
+
+model Post {
+  id        String    @id
+  authorId  String
+  slug      String
+  title     String
+  published Boolean
+  views     Int
+  rating    Float?
+  metadata  Json?
+  createdAt DateTime
+  score     Decimal?
+  tags      String[]
+  author    User      @relation(fields: [authorId], references: [id])
+  comments  Comment[]
+
+  @@unique([authorId, slug])
+  @@map("posts")
+}
+
+model Comment {
+  postId   String
+  number   Int
+  authorId String
+  body     String
+  post     Post   @relation(fields: [postId], references: [id])
+  author   User   @relation(fields: [authorId], references: [id])
+
+  @@id([postId, number])
+  @@map("comments")
+}

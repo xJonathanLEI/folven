@@ -1,0 +1,88 @@
+{
+	"name": "folven",
+	"version": "0.0.0",
+	"private": true,
+	"description": "Transactional PostgreSQL events and durable effects with atomic receipt completion, independent ingress and explicit Prisma type fences.",
+	"type": "module",
+	"packageManager": "pnpm@11.24.0",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		},
+		"./effects": {
+			"types": "./dist/effects/index.d.ts",
+			"import": "./dist/effects/index.js"
+		},
+		"./adapter": {
+			"types": "./dist/adapter.d.ts",
+			"import": "./dist/adapter.js"
+		},
+		"./postgres": {
+			"types": "./dist/postgres/index.d.ts",
+			"import": "./dist/postgres/index.js"
+		},
+		"./postgres/admin": {
+			"types": "./dist/postgres/admin.d.ts",
+			"import": "./dist/postgres/admin.js"
+		},
+		"./delivery": {
+			"types": "./dist/delivery/index.d.ts",
+			"import": "./dist/delivery/index.js"
+		},
+		"./bellows": {
+			"types": "./dist/bellows/index.d.ts",
+			"import": "./dist/bellows/index.js"
+		}
+	},
+	"files": [
+		"dist",
+		"README.md"
+	],
+	"sideEffects": false,
+	"scripts": {
+		"validate": "pnpm generate && pnpm typecheck && pnpm test && pnpm check && pnpm build",
+		"generate": "prisma generate --config prisma.config.ts",
+		"build": "tsc --project tsconfig.build.json",
+		"typecheck": "tsc --project tsconfig.json",
+		"test": "vitest run",
+		"test:integration": "vitest run --config vitest.integration.config.ts",
+		"lint": "pnpm lint:handler-directives && oxlint --type-aware --deny-warnings --report-unused-disable-directives-severity error --config .oxlintrc.json .",
+		"lint:handler-directives": "node scripts/check-handler-directives.ts",
+		"check": "pnpm lint && pnpm format:check",
+		"format": "oxfmt --config .oxfmtrc.json --write . && pnpm format:prisma",
+		"format:check": "oxfmt --config .oxfmtrc.json --check . && pnpm format:prisma:check",
+		"format:prisma": "prisma format --config prisma.config.ts",
+		"format:prisma:check": "prisma format --check --config prisma.config.ts"
+	},
+	"peerDependencies": {
+		"@prisma/client": "^7.10.0",
+		"@xjonathanlei/bellows": "^0.0.18",
+		"zod": "^4.5.2"
+	},
+	"peerDependenciesMeta": {
+		"@xjonathanlei/bellows": {
+			"optional": true
+		}
+	},
+	"devDependencies": {
+		"@prisma/adapter-pg": "7.10.0",
+		"@prisma/client": "7.10.0",
+		"@types/node": "22.20.1",
+		"@types/pg": "8.23.1",
+		"@xjonathanlei/bellows": "0.0.18",
+		"oxfmt": "0.66.0",
+		"oxlint": "1.81.0",
+		"oxlint-tsgolint": "7.0.2001",
+		"pg": "8.23.0",
+		"prisma": "7.10.0",
+		"typescript": "7.0.2",
+		"vitest": "4.1.11",
+		"zod": "4.5.2"
+	},
+	"engines": {
+		"node": ">=24.15.0"
+	}
+}

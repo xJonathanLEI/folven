@@ -1,0 +1,17 @@
+{
+	"$schema": "./node_modules/oxfmt/configuration_schema.json",
+	"useTabs": true,
+	"tabWidth": 2,
+	"printWidth": 80,
+	"proseWrap": "never",
+	"sortPackageJson": false,
+	"sortImports": {
+		"newlinesBetween": false,
+		"sortSideEffects": false
+	},
+	"ignorePatterns": [
+		"node_modules/**",
+		"dist/**",
+		"tests/fixtures/generated/**"
+	]
+}

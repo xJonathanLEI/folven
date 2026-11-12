@@ -1,0 +1,28 @@
+{
+	"compilerOptions": {
+		"target": "ES2024",
+		"lib": ["ES2024"],
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
+		"types": ["node"],
+		"strict": true,
+		"exactOptionalPropertyTypes": true,
+		"noUncheckedIndexedAccess": true,
+		"noImplicitOverride": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"verbatimModuleSyntax": true,
+		"isolatedModules": true,
+		"skipLibCheck": true,
+		"noEmit": true
+	},
+	"include": [
+		"src/**/*.ts",
+		"examples/**/*.ts",
+		"scripts/**/*.ts",
+		"tests/**/*.ts",
+		"*.config.ts"
+	],
+	"exclude": ["dist", "node_modules", "tests/fixtures/generated"]
+}

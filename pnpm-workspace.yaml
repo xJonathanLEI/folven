@@ -1,0 +1,8 @@
+minimumReleaseAge: 4320
+
+minimumReleaseAgeExclude:
+  - "@xjonathanlei/bellows@0.0.18"
+
+allowBuilds:
+  "@prisma/engines": true
+  prisma: true
