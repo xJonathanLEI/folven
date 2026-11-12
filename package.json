@@ -1,7 +1,13 @@
 {
 	"name": "folven",
-	"version": "0.0.0",
-	"private": true,
+	"version": "0.0.1",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/xJonathanLEI/folven.git"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
 	"description": "Transactional PostgreSQL events and durable effects with atomic receipt completion, independent ingress and explicit Prisma type fences.",
 	"type": "module",
 	"packageManager": "pnpm@11.24.0",
