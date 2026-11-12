@@ -1,0 +1,90 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*.*.*"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: npm-release
+  cancel-in-progress: false
+
+jobs:
+  release-check:
+    name: Check release tag
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout tagged source
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Require a stable version matching the package on master
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          [[ "$RELEASE_TAG" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]
+          test "$(jq -r .name package.json)" = folven
+          test "$(jq -r .version package.json)" = "${RELEASE_TAG#v}"
+          test "$(jq -r '.private // false' package.json)" = false
+          git merge-base --is-ancestor HEAD origin/master
+
+  checks:
+    name: Release checks
+    needs: release-check
+    uses: ./.github/workflows/code.yaml
+
+  publish:
+    name: Publish to npm
+    needs: checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: npm
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout tagged source
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+
+      - name: Check trusted-publishing CLI support
+        run: |
+          node --input-type=module <<'JS'
+          import { execFileSync } from "node:child_process";
+          const version = execFileSync("npm", ["--version"], { encoding: "utf8" }).trim();
+          const [major, minor, patch] = version.split(".").map(Number);
+          if (!(major > 11 || (major === 11 && (minor > 5 || (minor === 5 && patch >= 1))))) {
+            throw new Error(`npm >=11.5.1 is required for trusted publishing; found ${version}`);
+          }
+          JS
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build package
+        run: pnpm build
+
+      - name: Check for tracked changes
+        run: git diff --exit-code
+
+      # npm exchanges GitHub's OIDC identity; no NPM_TOKEN or NODE_AUTH_TOKEN.
+      # Public source repositories receive automatic npm provenance.
+      - name: Publish using trusted publishing
+        run: npm publish --access public --ignore-scripts
