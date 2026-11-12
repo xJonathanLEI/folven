@@ -15,6 +15,8 @@ Keep Folven independent of consuming applications and deployment infrastructure.
 
 Use Node from `.nvmrc` and the pinned pnpm version. Run `pnpm install --frozen-lockfile`, then `pnpm validate`.
 
+GitHub Actions runs validation and PostgreSQL 17 integration tests on pull requests and pushes to `master`; both jobs must pass.
+
 Run `TEST_DATABASE_URL=<explicit-disposable-postgresql-url> pnpm test:integration` for persistence changes and release validation. Never use a shared or production database. Fixtures own their schemas and must drain work and close clients before cleanup.
 
 Keep tests colocated and focused on architectural boundaries, concurrency, failure recovery, and public type contracts. Review test excessiveness before delivery; remove temporary probes rather than creating a second test subsystem. Do not weaken assertions or static fences to pass checks.
